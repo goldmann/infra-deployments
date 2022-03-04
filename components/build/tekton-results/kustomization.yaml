@@ -1,0 +1,10 @@
+resources:
+- namespace.yaml
+- https://github.com/tektoncd/results/releases/download/v0.4.0/release.yaml
+
+patchesStrategicMerge:
+- patch-postgres-statefulset.yaml
+- patch-api-service-nodeport.yaml
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
