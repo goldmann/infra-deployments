@@ -4,5 +4,7 @@ kind: Service
 metadata:
   name: tekton-results-api-service
   namespace: tekton-pipelines
+  annotations:
+    service.beta.openshift.io/serving-cert-secret-name: tekton-results-tls
 spec:
   type: NodePort

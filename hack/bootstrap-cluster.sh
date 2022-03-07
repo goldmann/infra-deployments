@@ -49,18 +49,6 @@ echo "Setting secrets for Tekton Results"
 if ! kubectl get namespace tekton-pipelines &>/dev/null; then
   kubectl create namespace tekton-pipelines
 fi
-if ! kubectl get secret -n tekton-pipelines tekton-results-tls &>/dev/null; then
-  openssl req -x509 \
-    -newkey rsa:4096 \
-    -keyout key.pem \
-    -out cert.pem \
-    -days 3650 \
-    -nodes \
-    -subj "/CN=tekton-results-api-service.tekton-pipelines.svc.cluster.local" \
-    -addext "subjectAltName = DNS:tekton-results-api-service.tekton-pipelines.svc.cluster.local"
-  kubectl create secret tls -n tekton-pipelines tekton-results-tls --cert=cert.pem --key=key.pem
-  rm cert.pem key.pem
-fi
 if ! kubectl get secret -n tekton-pipelines tekton-results-postgres &>/dev/null; then
   kubectl create secret generic tekton-results-postgres \
     --namespace="tekton-pipelines" \

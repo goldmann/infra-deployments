@@ -5,18 +5,20 @@ if ! tkn results &>/dev/null; then
    echo https://github.com/tektoncd/results/blob/main/tools/tkn-results/README.md
 fi
 
-oc get secrets tekton-results-tls -n tekton-pipelines --template='{{index .data "tls.crt"}}' | base64 -d > ~/.config/tkn/cert.pem
-if [ $? -ne 0 ]; then
-   echo "Not enough permissions on the cluster"
-   exit 1
+if [ -z "$TEKTON_RESULTS_PORT" ]; then
+  TEKTON_RESULTS_PORT=$(oc get service tekton-results-api-service -n tekton-pipelines -o yaml | yq '.spec.ports.[] | select(.name == "grpc") | .nodePort')
+  if [ $? -ne 0 ]; then
+     echo "Not enough permissions on the cluster to get PORT of tekton results"
+     echo "Node port of tekton results api can be set by TEKTON_RESULTS_PORT environment variable"
+     exit 1
+  fi
 fi
-
-
-PORT=$(oc get service tekton-results-api-service -n tekton-pipelines -o yaml | yq '.spec.ports.[] | select(.name == "grpc") | .nodePort')
 URL=$(oc whoami --show-console | sed 's|https://||')
 
+oc get configmap config-service-cabundle --template='{{index .data "service-ca.crt"}}' > ~/.config/tkn/cert.pem
+
 cat > ~/.config/tkn/results.yaml <<EOF
-address: $URL:$PORT
+address: $URL:$TEKTON_RESULTS_PORT
 token: $(oc whoami --show-token)
 ssl:
     roots_file_path: $HOME/.config/tkn/cert.pem
