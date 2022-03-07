@@ -1,6 +1,7 @@
 resources:
 - db-execution-configmap.yaml
 - https://github.com/tektoncd/results/releases/download/v0.4.0/release.yaml
+- route.yaml
 
 patchesStrategicMerge:
 - patch-postgres-redhat-statefulset.yaml
