@@ -64,7 +64,7 @@ fi
 if ! kubectl get secret -n tekton-pipelines tekton-results-postgres &>/dev/null; then
   kubectl create secret generic tekton-results-postgres \
     --namespace="tekton-pipelines" \
-    --from-literal=POSTGRES_USER=postgres \
+    --from-literal=POSTGRES_USER=results \
     --from-literal=POSTGRES_PASSWORD=$(openssl rand -base64 20)
 fi
 
