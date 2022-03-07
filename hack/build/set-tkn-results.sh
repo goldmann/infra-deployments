@@ -1,5 +1,14 @@
 #!/bin/bash
 
+if ! oc auth can-i --list | grep 'results.results.tekton.dev' | grep -q get; then
+  echo You do not have permission to list records.results.tekton.dev in current namespace
+  echo
+  echo To get the permission you can run:
+  echo "  For namespace: kubectl create rolebinding tekton-results-debug --clusterrole=tekton-results-readonly --user=\$(oc whoami)"
+  echo "  Global permission: kubectl create clusterrolebinding tekton-results-debug --clusterrole=tekton-results-readonly --user=\$(oc whoami)"
+  exit 1
+fi
+
 if ! tkn results &>/dev/null; then
    echo Command 'tkn results' is not installed
    echo https://github.com/tektoncd/results/blob/main/tools/tkn-results/README.md
@@ -24,6 +33,6 @@ ssl:
     roots_file_path: $HOME/.config/tkn/cert.pem
     server_name_override: tekton-results-api-service.tekton-pipelines.svc.cluster.local
 EOF
-
-echo If you cannot list results then you are probably missing permission, can be added by:
-echo "kubectl create clusterrolebinding tekton-results-debug --clusterrole=tekton-results-readonly --user=\$(oc whoami)"
+echo Configuration written to ~/.config/tkn/results.yaml
+echo
+echo Try it: tkn results list $(oc config view --minify -o 'jsonpath={..namespace}')
