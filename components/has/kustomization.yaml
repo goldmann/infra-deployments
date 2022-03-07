@@ -15,7 +15,7 @@ images:
 
 configMapGenerator:
 - literals:
-  - GITHUB_ORG=""
+  - GITHUB_ORG="dev-hacbs-goldmann"
   name: github-config
   behavior: replace
 
